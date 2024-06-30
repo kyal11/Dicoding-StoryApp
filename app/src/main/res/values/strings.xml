@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">StoryApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="story_app">Story App</string>
+    <string name="title_welcome">Welcome to StoryApp</string>
+    <string name="description_welcome">Discover the magic in every story. Explore, share and let the stories inspire you. Start your adventure now and let the world know your story!</string>
+    <string name="description_signin">Welcome Back !, Please enter your details.</string>
+
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
 </resources>
