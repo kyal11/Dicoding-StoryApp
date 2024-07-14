@@ -10,6 +10,10 @@
     <string name="description_signin">Welcome Back !, Please enter your details.</string>
 
     <string name="email">Email</string>
+    <string name="invalid_email">Email mush be have pattern @email.com</string>
     <string name="name">Name</string>
     <string name="password">Password</string>
+    <string name="please_enter_pw">Please enter your password</string>
+    <string name="password_too_short">Password must be at least 8 characters</string>
+    <string name="show_pw">Show</string>
 </resources>
