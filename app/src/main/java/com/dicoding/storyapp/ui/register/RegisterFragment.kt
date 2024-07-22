@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.dicoding.storyapp.R
 import com.dicoding.storyapp.databinding.FragmentRegisterBinding
 import com.google.android.material.snackbar.Snackbar
@@ -34,6 +35,9 @@ class RegisterFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
         binding.btnSignup.setOnClickListener {
             val name = binding.edtName.text.toString()
             val email = binding.editTextEmailCustom.text.toString()

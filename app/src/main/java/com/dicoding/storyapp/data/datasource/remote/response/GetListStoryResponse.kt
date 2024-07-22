@@ -3,37 +3,36 @@ package com.dicoding.storyapp.data.datasource.remote.response
 import com.google.gson.annotations.SerializedName
 
 data class GetListStoryResponse(
+	@SerializedName("listStory")
+	val listStory: List<ListStoryItem>,
 
-	@field:SerializedName("listStory")
-	val listStory: List<ListStoryItem?>? = null,
+	@SerializedName("error")
+	val error: Boolean,
 
-	@field:SerializedName("error")
-	val error: Boolean? = null,
-
-	@field:SerializedName("message")
-	val message: String? = null
+	@SerializedName("message")
+	val message: String
 )
 
 data class ListStoryItem(
+	@SerializedName("photoUrl")
+	val photoUrl: String,
 
-	@field:SerializedName("photoUrl")
-	val photoUrl: String? = null,
+	@SerializedName("createdAt")
+	val createdAt: String,
 
-	@field:SerializedName("createdAt")
-	val createdAt: String? = null,
+	@SerializedName("name")
+	val name: String,
 
-	@field:SerializedName("name")
-	val name: String? = null,
+	@SerializedName("description")
+	val description: String,
 
-	@field:SerializedName("description")
-	val description: String? = null,
+	@SerializedName("lon")
+	val lon: Double?,
 
-	@field:SerializedName("lon")
-	val lon: Any? = null,
+	@SerializedName("id")
+	val id: String,
 
-	@field:SerializedName("id")
-	val id: String? = null,
-
-	@field:SerializedName("lat")
-	val lat: Any? = null
+	@SerializedName("lat")
+	val lat: Double?
 )
+

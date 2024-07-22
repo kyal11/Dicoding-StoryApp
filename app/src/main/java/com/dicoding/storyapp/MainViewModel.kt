@@ -7,6 +7,8 @@ import com.dicoding.storyapp.data.pref.UserPreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,11 +20,7 @@ class MainViewModel @Inject constructor(
     private val _userSession = MutableSharedFlow<UserModel>()
     val userSession : Flow<UserModel> = _userSession
 
-    init {
-        viewModelScope.launch {
-            userPreference.getSession().collect { userModel ->
-                _userSession.emit(userModel)
-            }
-        }
-    }
+    val isUserLoggedIn: Flow<Boolean> = userPreference.getSession()
+        .map { it.token.isNotEmpty() }
+        .distinctUntilChanged()
 }

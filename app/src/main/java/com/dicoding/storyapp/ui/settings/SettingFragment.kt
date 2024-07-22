@@ -1,60 +1,78 @@
 package com.dicoding.storyapp.ui.settings
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.CompoundButton
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.dicoding.storyapp.R
+import com.dicoding.storyapp.data.pref.UserModel
+import com.dicoding.storyapp.databinding.FragmentSettingBinding
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SettingFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class SettingFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+@AndroidEntryPoint
+class SettingFragment : DialogFragment() {
+    private val viewModel: SettingViewModel by viewModels()
+    private lateinit var binding: FragmentSettingBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_setting, container, false)
+    ): View {
+        binding = FragmentSettingBinding.inflate(inflater, container, false)
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val paddingHorizontal = resources.getDimensionPixelSize(R.dimen.dialog_horizontal_padding)
+        binding.root.setPadding(paddingHorizontal, 0, paddingHorizontal, 0)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment SettingFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SettingFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        lifecycleScope.launch {
+            viewModel.userSession.collect { userModel ->
+                updateUI(userModel)
             }
+        }
+
+        binding.switchTheme.setOnCheckedChangeListener { _: CompoundButton, isChecked: Boolean ->
+            viewModel.updateTheme(isChecked)
+        }
+
+        binding.rgLanguage.setOnCheckedChangeListener { _, checkedId ->
+            val isIndonesian = checkedId == R.id.rb_indonesia
+            viewModel.updateLanguage(isIndonesian)
+        }
+
+        binding.btnLogout.setOnClickListener {
+            viewModel.logout()
+            dismiss()
+            findNavController().navigate(R.id.action_homeFragment_to_welcomeFragment)
+        }
+    }
+
+    private fun updateUI(userModel: UserModel) {
+        binding.switchTheme.isChecked = userModel.theme
+        if (userModel.language) {
+            binding.rbIndonesia.isChecked = true
+        } else {
+            binding.rbEnglish.isChecked = true
+        }
     }
 }

@@ -18,8 +18,11 @@ class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _loginStatus = MutableStateFlow<String?>(null)
-    val loginStatus: StateFlow<String?> = _loginStatus
+    private val _loginStatus = MutableStateFlow<Boolean?>(null)
+    val loginStatus: StateFlow<Boolean?> = _loginStatus
+
+    private val _loginMassage = MutableStateFlow<String?>(null)
+    val loginMassage: StateFlow<String?> = _loginMassage
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
@@ -28,17 +31,22 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val response = userRepository.login(email, password)
-                _loginStatus.value = response.message
+                _loginMassage.value = response.message
                 if (response.error == false) {
                     response.loginResult?.let { loginResult ->
-                        val userModel = UserModel(email, loginResult.token ?: "", true)
+                        val userModel = UserModel(email, loginResult.token ?: "")
                         saveSession(userModel)
+                        _loginStatus.value = true
                     }
+                }
+                else {
+                    _loginStatus.value = false
                 }
             } catch (e: HttpException) {
                 val jsonInString = e.response()?.errorBody()?.string()
                 val errorBody = Gson().fromJson(jsonInString, LoginResponse::class.java)
                 _errorMessage.value = errorBody.message
+                _loginStatus.value = false
             }
         }
     }

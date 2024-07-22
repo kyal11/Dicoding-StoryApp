@@ -2,6 +2,7 @@ package com.dicoding.storyapp.data.repository.di
 
 import com.dicoding.storyapp.data.datasource.remote.retrofit.ApiService
 import com.dicoding.storyapp.data.pref.UserPreference
+import com.dicoding.storyapp.data.repository.StoryPagingSource
 import com.dicoding.storyapp.data.repository.StoryRepository
 import com.dicoding.storyapp.data.repository.UserRepository
 import dagger.Module
@@ -29,5 +30,13 @@ object RepositoryModule {
         apiService: ApiService
     ) : StoryRepository {
         return StoryRepository(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesStoryPagingSource(
+        apiService: ApiService
+    ) : StoryPagingSource {
+        return StoryPagingSource(apiService)
     }
 }

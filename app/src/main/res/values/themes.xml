@@ -5,6 +5,9 @@
          <item name="colorPrimary">@color/blue_300</item>
         <item name="android:windowBackground">@color/white</item>
     </style>
-
+    <style name="roundedImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
     <style name="Theme.StoryApp" parent="Base.Theme.StoryApp" />
 </resources>

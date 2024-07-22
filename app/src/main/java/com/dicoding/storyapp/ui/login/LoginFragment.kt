@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.dicoding.storyapp.R
 import com.dicoding.storyapp.databinding.FragmentLoginBinding
 import com.google.android.material.snackbar.Snackbar
@@ -36,6 +36,9 @@ class LoginFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
         binding.btnSignin.setOnClickListener {
             val email = binding.editTextEmailCustom.text.toString()
             val password = binding.editTextPasswordCustom.text.toString()
@@ -52,11 +55,21 @@ class LoginFragment : Fragment() {
         lifecycleScope.launch {
             loginViewModel.loginStatus.collect { status ->
                 status?.let {
-                    showSnackBar(it)
+                    if (status) {
+                        findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
+                    }
+
                 }
             }
         }
 
+        lifecycleScope.launch {
+            loginViewModel.loginMassage.collect { status ->
+                status?.let {
+                    showSnackBar(it)
+                }
+            }
+        }
         lifecycleScope.launch {
             loginViewModel.errorMessage.collect { errorMessage ->
                 errorMessage?.let {
@@ -73,4 +86,5 @@ class LoginFragment : Fragment() {
     private fun showSnackBar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
+
 }
