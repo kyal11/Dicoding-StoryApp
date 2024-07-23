@@ -37,7 +37,7 @@ class LoginFragment : Fragment() {
 
     private fun setupListeners() {
         binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            findNavController().navigate(R.id.action_loginFragment_to_welcomeFragment)
         }
         binding.btnSignin.setOnClickListener {
             val email = binding.editTextEmailCustom.text.toString()
@@ -56,20 +56,20 @@ class LoginFragment : Fragment() {
             loginViewModel.loginStatus.collect { status ->
                 status?.let {
                     if (status) {
-                        findNavController().navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment())
+                        findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
                     }
-
                 }
             }
         }
 
         lifecycleScope.launch {
-            loginViewModel.loginMassage.collect { status ->
-                status?.let {
+            loginViewModel.loginMessage.collect { message ->
+                message?.let {
                     showSnackBar(it)
                 }
             }
         }
+
         lifecycleScope.launch {
             loginViewModel.errorMessage.collect { errorMessage ->
                 errorMessage?.let {
@@ -86,5 +86,6 @@ class LoginFragment : Fragment() {
     private fun showSnackBar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
-
 }
+
+

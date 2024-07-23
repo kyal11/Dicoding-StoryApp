@@ -13,6 +13,7 @@ import com.dicoding.storyapp.databinding.FragmentRegisterBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
 
@@ -55,6 +56,17 @@ class RegisterFragment : Fragment() {
         lifecycleScope.launch {
             registerViewModel.registerStatus.collect { status ->
                 status?.let {
+                    if (it) {
+                        navigateToLogin()
+                        onDestroyView()
+                    }
+                }
+            }
+        }
+
+        lifecycleScope.launch {
+            registerViewModel.registerMessage.collect { message ->
+                message?.let {
                     showSnackBar(it)
                 }
             }
@@ -75,5 +87,9 @@ class RegisterFragment : Fragment() {
 
     private fun showSnackBar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+    }
+
+    private fun navigateToLogin() {
+        findNavController().navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment())
     }
 }

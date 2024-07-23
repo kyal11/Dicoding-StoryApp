@@ -7,6 +7,7 @@ import com.dicoding.storyapp.data.datasource.remote.response.ListStoryItem
 import com.dicoding.storyapp.data.datasource.remote.retrofit.ApiService
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class StoryRepository @Inject constructor(
@@ -23,5 +24,5 @@ class StoryRepository @Inject constructor(
     }
     suspend fun getDetailStories(id: String) = apiService.getDetailStories(id)
 
-    suspend fun postStories(description: String, photo: MultipartBody.Part, lat: Float?, lon: Float?) = apiService.postStories(description, photo, lat, lon)
+    suspend fun postStories(description: RequestBody, photo: MultipartBody.Part, lat: Float?, lon: Float?) = apiService.postStories(description, photo, lat, lon)
 }
