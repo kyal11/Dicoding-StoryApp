@@ -1,5 +1,7 @@
 package com.dicoding.storyapp.ui.register
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,8 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dicoding.storyapp.R
 import com.dicoding.storyapp.databinding.FragmentRegisterBinding
+import com.dicoding.storyapp.foundation.utils.LoadingDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -19,7 +23,7 @@ class RegisterFragment : Fragment() {
 
     private lateinit var binding: FragmentRegisterBinding
     private val registerViewModel: RegisterViewModel by viewModels()
-
+    private lateinit var loadingDialog: LoadingDialogFragment
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,6 +35,8 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        playAnimation()
+        loadingDialog = LoadingDialogFragment()
         setupListeners()
         observeViewModel()
     }
@@ -54,10 +60,11 @@ class RegisterFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            registerViewModel.registerStatus.collect { status ->
+            registerViewModel.registerStatus.collectLatest { status ->
                 status?.let {
                     if (it) {
                         navigateToLogin()
+                        hideLoading()
                         onDestroyView()
                     }
                 }
@@ -65,31 +72,81 @@ class RegisterFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            registerViewModel.registerMessage.collect { message ->
+            registerViewModel.registerMessage.collectLatest { message ->
                 message?.let {
                     showSnackBar(it)
+                    hideLoading()
                 }
             }
         }
 
         lifecycleScope.launch {
-            registerViewModel.errorMessage.collect { errorMessage ->
+            registerViewModel.errorMessage.collectLatest { errorMessage ->
                 errorMessage?.let {
                     showSnackBar(it)
+                    hideLoading()
                 }
             }
         }
     }
 
     private fun registerUser(name: String, email: String, password: String) {
+        showLoading()
         registerViewModel.registerUser(name, email, password)
     }
 
     private fun showSnackBar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+        view?.let {
+            Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun navigateToLogin() {
         findNavController().navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment())
+    }
+    private fun playAnimation() {
+        val imageAnimatorX = ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }
+
+        val signinText = ObjectAnimator.ofFloat(binding.tvSignin, View.ALPHA, 0f, 1f).setDuration(1000)
+        val storyAppText = ObjectAnimator.ofFloat(binding.tvStoryapp, View.ALPHA, 0f, 1f).setDuration(1000)
+        val descText = ObjectAnimator.ofFloat(binding.textView, View.ALPHA, 0f, 1f).setDuration(1000)
+
+        val edtName = ObjectAnimator.ofFloat(binding.edtName, View.ALPHA, 0f, 1f).setDuration(1000)
+        val edtEmail = ObjectAnimator.ofFloat(binding.editTextEmailCustom, View.ALPHA, 0f, 1f).setDuration(1000)
+        val edtPassword = ObjectAnimator.ofFloat(binding.textInputLayout, View.ALPHA, 0f, 1f).setDuration(1000)
+
+        val btnSigninInitialY = binding.btnSignup.y + 750f
+        binding.btnSignup.y = btnSigninInitialY
+        val btnSigninMove = ObjectAnimator.ofFloat(binding.btnSignup, View.TRANSLATION_Y, 0f).setDuration(500)
+
+        val animatorSet = AnimatorSet().apply {
+            playTogether(signinText, storyAppText, imageAnimatorX, descText)
+            playSequentially(
+                AnimatorSet().apply {
+                    playTogether(edtName, edtEmail, edtPassword)
+                },
+                btnSigninMove
+            )
+        }
+        animatorSet.start()
+    }
+
+    private fun showLoading() {
+        if (!loadingDialog.isAdded) {
+            loadingDialog.show(childFragmentManager, LOADING_TAG)
+        }
+    }
+
+    private fun hideLoading() {
+        if (loadingDialog.isAdded) {
+            loadingDialog.dismiss()
+        }
+    }
+    companion object {
+        const val LOADING_TAG = "Loading"
     }
 }

@@ -8,4 +8,9 @@
     <color name="red_300">#FF2E2E</color>
     <color name="gray_200">#F6F6F6</color>
     <color name="gray_300">#BDBDBD</color>
+
+    <color name="white_to_gray">#FFC9C3CF</color>
+    <color name="black_card">#FF1B1F29</color>
+    <color name="black_windows">#FF141218</color>
+    <color name="text_color_gray">#FFC9C3CF</color>
 </resources>

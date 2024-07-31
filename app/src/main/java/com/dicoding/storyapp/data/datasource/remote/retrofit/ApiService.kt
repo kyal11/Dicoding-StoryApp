@@ -39,6 +39,10 @@ interface ApiService {
         @Query("size") size: Int,
         @Query("location") location: Int? = 0
     ): GetListStoryResponse
+    @GET("stories")
+    suspend fun getStoriesWithLocation(
+        @Query("location") location : Int = 1,
+    ): GetListStoryResponse
 
     @GET("stories/{id}")
     suspend fun getDetailStories(
@@ -52,6 +56,4 @@ interface ApiService {
         @Part("lat") lat: Float?,
         @Part("lon") lon: Float?
     ) : AddNewStoryResponse
-
-
 }

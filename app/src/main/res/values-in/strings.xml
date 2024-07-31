@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StoryApp</string>
+    <string name="sign_in">Masuk</string>
+    <string name="sign_up">Daftar</string>
+    <string name="story_app">Story App</string>
+    <string name="title_welcome">Selamat Datang di StoryApp</string>
+    <string name="description_welcome">Temukan keajaiban dalam setiap cerita. Jelajahi, bagikan, dan biarkan cerita-cerita menginspirasi Anda. Mulailah petualangan Anda sekarang dan biarkan dunia tahu cerita Anda!</string>
+    <string name="description_signin">Selamat Datang Kembali!, Silakan masukkan detail Anda.</string>
+
+    <string name="email">Email</string>
+    <string name="invalid_email">Email harus memiliki pola @email.com</string>
+    <string name="name">Nama</string>
+    <string name="password">Kata Sandi</string>
+    <string name="please_enter_pw">Silakan masukkan kata sandi Anda</string>
+    <string name="password_too_short">Kata sandi harus minimal 8 karakter</string>
+    <string name="show_pw">Tampilkan</string>
+    <string name="fill_all_fields">Silakan isi semua formulir data</string>
+    <string name="add_button">Tambah Tombol</string>
+    <string name="description">Deskripsi</string>
+    <string name="location">Lokasi</string>
+    <string name="time_date">waktu tanggal</string>
+    <string name="loading">Memuat...</string>
+    <string name="camera">Kamera</string>
+    <string name="galery">Galeri</string>
+    <string name="posting">Posting</string>
+    <string name="setting">Pengaturan</string>
+    <string name="theme">Tema</string>
+    <string name="light">Terang</string>
+    <string name="dark">Gelap</string>
+    <string name="language">Bahasa</string>
+    <string name="english">Inggris</string>
+    <string name="indonesia">Indonesia</string>
+    <string name="logout">Keluar</string>
+    <string name="story_image">Gambar Cerita</string>
+
+    <string name="select_photo">Silakan pilih foto</string>
+    <string name="empty_description">Deskripsi tidak boleh kosong</string>
+    <string name="failed_to_get_image">Gagal mendapatkan URI gambar dari kamera</string>
+    <string name="network_error">Tidak ada akses internet</string>
+
+    <string name="maps">Peta</string>
+    <string name="normal_type">Biasa</string>
+    <string name="satellite_type">Satelit</string>
+    <string name="terrain_type">Medan</string>
+    <string name="hybrid_type">Hibrida</string>
+
+    <string name="more_maps">banyak maps</string>
+    <string name="add_location">Tambahkan Lokasi</string>
+    <string name="no">Tidak</string>
+    <string name="yes">Ya</string>
+
+    <string name="failed_to_get_location">Gagal mendapatkan lokasi. Silakan coba lagi.</string>
+    <string name="permission_denied">Izin lokasi ditolak. Silakan aktifkan di pengaturan.</string>
+</resources>

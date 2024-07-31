@@ -1,12 +1,13 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:backgroundTint="?attr/cardBackgroundColor"
     app:cardCornerRadius="4dp"
     app:cardElevation="4dp"
-    android:layout_marginBottom="12dp"
-    android:backgroundTint="@color/white"
-    xmlns:tools="http://schemas.android.com/tools">
+    app:strokeColor="#1B1F29">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -22,20 +23,21 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Hello" />
+            tools:text="@string/name" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/iv_story"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:layout_marginTop="4dp"
-            android:contentDescription="TODO"
-            app:shapeAppearanceOverlay="@style/roundedImageView"
             android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/story_image"
             android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_name"
+            app:shapeAppearanceOverlay="@style/roundedImageView"
+            tools:ignore="ImageContrastCheck"
             tools:src="@drawable/ic_launcher_background" />
 
         <TextView
@@ -48,16 +50,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_story"
-            tools:text="Hello" />
+            tools:targetApi="o"
+            tools:text="@string/description" />
 
         <TextView
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textColor="@color/gray_100"
             app:layout_constraintStart_toStartOf="@+id/tv_desc"
             app:layout_constraintTop_toBottomOf="@+id/tv_desc"
-            tools:text="date" />
+            tools:text="@string/time_date" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

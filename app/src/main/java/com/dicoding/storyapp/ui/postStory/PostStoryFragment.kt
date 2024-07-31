@@ -1,24 +1,32 @@
 package com.dicoding.storyapp.ui.postStory
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.activity.result.PickVisualMediaRequest
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dicoding.storyapp.R
 import com.dicoding.storyapp.databinding.FragmentPostStoryBinding
+import com.dicoding.storyapp.foundation.utils.LoadingDialogFragment
 import com.dicoding.storyapp.foundation.utils.getImageUri
 import com.dicoding.storyapp.foundation.utils.reduceFileImage
 import com.dicoding.storyapp.foundation.utils.uriToFile
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -30,7 +38,20 @@ class PostStoryFragment : Fragment() {
     private val viewModel: PostStoryViewModel by viewModels()
     private var imageUri: Uri? = null
     private lateinit var binding: FragmentPostStoryBinding
+    private lateinit var loadingDialog: LoadingDialogFragment
+    private var lat: Double? = null
+    private var lon: Double? = null
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                getMyLocation()
+            } else {
+                showSnackBar(getString(R.string.permission_denied))
+            }
+        }
     private val launcherGallery = registerForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
@@ -38,7 +59,7 @@ class PostStoryFragment : Fragment() {
             imageUri = uri
             showImage()
         } else {
-            Log.d("Photo Picker", "No media selected")
+            showSnackBar(getString(R.string.failed_to_get_image))
         }
     }
 
@@ -62,9 +83,7 @@ class PostStoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val nav = findNavController().currentDestination
-        Log.d("PostStory", "Status: $nav")
-
+        loadingDialog = LoadingDialogFragment()
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
@@ -78,15 +97,42 @@ class PostStoryFragment : Fragment() {
         binding.btnPosting.setOnClickListener {
             postStory()
         }
+        binding.switchLocation.setOnCheckedChangeListener { _: CompoundButton, isChecked: Boolean ->
+            if (isChecked) {
+                getMyLocation()
+            } else {
+                lat = null
+                lon = null
+            }
+        }
 
         observeViewModel()
+    }
+
+    private fun getMyLocation() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    location?.let {
+                        lat = it.latitude
+                        lon = it.longitude
+                    } ?: showSnackBar(getString(R.string.failed_to_get_location))
+                }
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 
     private fun startCamera() {
         imageUri = getImageUri(requireContext())
         imageUri?.let { uri ->
             launcherIntentCamera.launch(uri)
-        } ?: showSnackBar("Failed to get image URI for camera")
+        } ?: showSnackBar(getString(R.string.failed_to_get_image))
     }
 
     private fun startGallery() {
@@ -102,7 +148,7 @@ class PostStoryFragment : Fragment() {
             val imageFile = uriToFile(uri, requireContext()).reduceFileImage()
             val descriptionText = binding.edtDescription.text.toString()
             if (descriptionText.isBlank()) {
-                showSnackBar("Description cannot be empty")
+                showSnackBar(getString(R.string.empty_description))
                 return
             }
             val descriptionRequestBody = descriptionText.toRequestBody("text/plain".toMediaType())
@@ -112,20 +158,21 @@ class PostStoryFragment : Fragment() {
                 imageFile.name,
                 requestImageFile
             )
-
-            viewModel.postStory(descriptionRequestBody, multipartBody, null, null)
+            showLoading()
+            viewModel.postStory(descriptionRequestBody, multipartBody,  lat?.toFloat(), lon?.toFloat())
             observeViewModel()
 
-        } ?: showSnackBar("Please select a photo")
+        } ?: showSnackBar(getString(R.string.select_photo))
     }
 
 
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            viewModel.postStatus.collect { status ->
+            viewModel.postStatus.collectLatest { status ->
                 status?.let {
                     showSnackBar(it)
+                    hideLoading()
                     if (findNavController().currentDestination?.id == R.id.postStoryFragment) {
                         findNavController().navigate(R.id.action_postStoryFragment_to_homeFragment)
                     }
@@ -134,15 +181,32 @@ class PostStoryFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            viewModel.errorMessage.collect { errorMessage ->
+            viewModel.errorMessage.collectLatest { errorMessage ->
                 errorMessage?.let {
                     showSnackBar(it)
+                    hideLoading()
                 }
             }
         }
     }
 
     private fun showSnackBar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+        view?.let {
+            Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+    private fun showLoading() {
+        if (!loadingDialog.isAdded) {
+            loadingDialog.show(childFragmentManager, LOADING_TAG)
+        }
+    }
+
+    private fun hideLoading() {
+        if (loadingDialog.isAdded) {
+            loadingDialog.dismiss()
+        }
+    }
+    companion object {
+        const val LOADING_TAG = "Loading"
     }
 }

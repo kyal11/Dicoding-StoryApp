@@ -1,5 +1,7 @@
 package com.dicoding.storyapp.ui.login
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.dicoding.storyapp.R
 import com.dicoding.storyapp.databinding.FragmentLoginBinding
+import com.dicoding.storyapp.foundation.utils.LoadingDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -19,6 +23,7 @@ class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
     private val loginViewModel: LoginViewModel by viewModels()
+    private lateinit var loadingDialog: LoadingDialogFragment
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,9 +35,40 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        playAnimation()
+        loadingDialog = LoadingDialogFragment()
         setupListeners()
         observeViewModel()
+    }
+
+    private fun playAnimation() {
+        val imageAnimatorX = ObjectAnimator.ofFloat(binding.imageView, View.TRANSLATION_X, -30f, 30f).apply {
+            duration = 6000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+        }
+
+        val signinText = ObjectAnimator.ofFloat(binding.tvSignin, View.ALPHA, 0f, 1f).setDuration(1000)
+        val storyAppText = ObjectAnimator.ofFloat(binding.tvStoryapp, View.ALPHA, 0f, 1f).setDuration(1000)
+        val descText = ObjectAnimator.ofFloat(binding.textView, View.ALPHA, 0f, 1f).setDuration(1000)
+
+        val edtEmail = ObjectAnimator.ofFloat(binding.editTextEmailCustom, View.ALPHA, 0f, 1f).setDuration(1000)
+        val edtPassword = ObjectAnimator.ofFloat(binding.textInputLayout, View.ALPHA, 0f, 1f).setDuration(1000)
+
+        val btnSigninInitialY = binding.btnSignin.y + 750f
+        binding.btnSignin.y = btnSigninInitialY
+        val btnSigninMove = ObjectAnimator.ofFloat(binding.btnSignin, View.TRANSLATION_Y, 0f).setDuration(500)
+
+        val animatorSet = AnimatorSet().apply {
+            playTogether(signinText, storyAppText, imageAnimatorX, descText)
+            playSequentially(
+                AnimatorSet().apply {
+                    playTogether(edtEmail, edtPassword)
+                },
+                btnSigninMove
+            )
+        }
+        animatorSet.start()
     }
 
     private fun setupListeners() {
@@ -53,38 +89,64 @@ class LoginFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            loginViewModel.loginStatus.collect { status ->
-                status?.let {
+            loginViewModel.loginStatus.collectLatest { status ->
+                status.let {
                     if (status) {
                         findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+                        hideLoading()
+                        onDestroyView()
                     }
                 }
             }
         }
 
         lifecycleScope.launch {
-            loginViewModel.loginMessage.collect { message ->
-                message?.let {
-                    showSnackBar(it)
+            loginViewModel.loginMessage.collectLatest { message ->
+                message.let {
+                    if (view != null && isAdded) {
+                        showSnackBar(it)
+                    }
+                    hideLoading()
                 }
             }
         }
 
         lifecycleScope.launch {
-            loginViewModel.errorMessage.collect { errorMessage ->
-                errorMessage?.let {
-                    showSnackBar(it)
+            loginViewModel.errorMessage.collectLatest { errorMessage ->
+                errorMessage.let {
+                    if (view != null && isAdded) {
+                        showSnackBar(it)
+                    }
+                    hideLoading()
                 }
             }
         }
     }
 
     private fun loginUser(email: String, password: String) {
+        showLoading()
         loginViewModel.loginUser(email, password)
     }
 
     private fun showSnackBar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
+        view?.let {
+            Snackbar.make(it, message, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun showLoading() {
+        if (!loadingDialog.isAdded) {
+            loadingDialog.show(childFragmentManager, LOADING_TAG)
+        }
+    }
+
+    private fun hideLoading() {
+        if (loadingDialog.isAdded) {
+            loadingDialog.dismiss()
+        }
+    }
+    companion object {
+        const val LOADING_TAG = "Loading"
     }
 }
 

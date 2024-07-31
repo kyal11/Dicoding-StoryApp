@@ -1,5 +1,6 @@
 package com.dicoding.storyapp.data.repository.di
 
+import com.dicoding.storyapp.data.datasource.local.StoryDatabase
 import com.dicoding.storyapp.data.datasource.remote.retrofit.ApiService
 import com.dicoding.storyapp.data.pref.UserPreference
 import com.dicoding.storyapp.data.repository.StoryPagingSource
@@ -27,9 +28,10 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideStoryRepository(
-        apiService: ApiService
+        apiService: ApiService,
+        storyDatabase: StoryDatabase
     ) : StoryRepository {
-        return StoryRepository(apiService)
+        return StoryRepository(apiService, storyDatabase)
     }
 
     @Provides

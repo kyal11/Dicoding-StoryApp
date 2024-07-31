@@ -48,6 +48,8 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_welcomeFragment"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/welcomeFragment"
             app:destination="@id/welcomeFragment" />
         <action
             android:id="@+id/action_homeFragment_to_detailStoryFragment"
@@ -58,6 +60,10 @@
         <action
             android:id="@+id/action_homeFragment_to_settingFragment"
             app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_mapsFragment"
+
+            app:destination="@id/mapsFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailStoryFragment"
@@ -82,4 +88,13 @@
         android:name="com.dicoding.storyapp.ui.settings.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" />
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.dicoding.storyapp.ui.maps.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>

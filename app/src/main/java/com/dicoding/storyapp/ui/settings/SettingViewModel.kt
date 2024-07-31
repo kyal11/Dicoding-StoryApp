@@ -19,35 +19,23 @@ class SettingViewModel @Inject constructor(
 
     fun updateTheme(isDarkMode: Boolean) {
         viewModelScope.launch {
-            try {
-                val user = userRepository.getSession().first()
-                val updatedUser = user.copy(theme = isDarkMode)
-                userRepository.saveSession(updatedUser)
-            } catch (e: Exception) {
-
-            }
+            val user = userRepository.getSession().first()
+            val updatedUser = user.copy(theme = isDarkMode)
+            userRepository.saveSession(updatedUser)
         }
     }
 
     fun updateLanguage(isIndonesian: Boolean) {
         viewModelScope.launch {
-            try {
-                val user = userRepository.getSession().first()
-                val updatedUser = user.copy(language = isIndonesian)
-                userRepository.saveSession(updatedUser)
-            } catch (e: Exception) {
-
-            }
+            val user = userRepository.getSession().first()
+            val updatedUser = user.copy(language = isIndonesian)
+            userRepository.saveSession(updatedUser)
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            try {
-                userRepository.logout()
-            } catch (e: Exception) {
-
-            }
+            userRepository.logout()
         }
     }
 }
