@@ -19,7 +19,6 @@ import com.dicoding.storyapp.foundation.adapter.StoryClickListener
 import com.dicoding.storyapp.ui.settings.SettingFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

@@ -52,12 +52,12 @@ class LoginFragment : Fragment() {
         val storyAppText = ObjectAnimator.ofFloat(binding.tvStoryapp, View.ALPHA, 0f, 1f).setDuration(1000)
         val descText = ObjectAnimator.ofFloat(binding.textView, View.ALPHA, 0f, 1f).setDuration(1000)
 
-        val edtEmail = ObjectAnimator.ofFloat(binding.editTextEmailCustom, View.ALPHA, 0f, 1f).setDuration(1000)
+        val edtEmail = ObjectAnimator.ofFloat(binding.editTextEmailCustomLogin, View.ALPHA, 0f, 1f).setDuration(1000)
         val edtPassword = ObjectAnimator.ofFloat(binding.textInputLayout, View.ALPHA, 0f, 1f).setDuration(1000)
 
-        val btnSigninInitialY = binding.btnSignin.y + 750f
-        binding.btnSignin.y = btnSigninInitialY
-        val btnSigninMove = ObjectAnimator.ofFloat(binding.btnSignin, View.TRANSLATION_Y, 0f).setDuration(500)
+        val btnSigninInitialY = binding.btnSigninLogin.y + 750f
+        binding.btnSigninLogin.y = btnSigninInitialY
+        val btnSigninMove = ObjectAnimator.ofFloat(binding.btnSigninLogin, View.TRANSLATION_Y, 0f).setDuration(500)
 
         val animatorSet = AnimatorSet().apply {
             playTogether(signinText, storyAppText, imageAnimatorX, descText)
@@ -75,9 +75,9 @@ class LoginFragment : Fragment() {
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_welcomeFragment)
         }
-        binding.btnSignin.setOnClickListener {
-            val email = binding.editTextEmailCustom.text.toString()
-            val password = binding.editTextPasswordCustom.text.toString()
+        binding.btnSigninLogin.setOnClickListener {
+            val email = binding.editTextEmailCustomLogin.text.toString()
+            val password = binding.editTextPasswordCustomLogin.text.toString()
 
             if (email.isNotBlank() && password.isNotBlank()) {
                 loginUser(email, password)

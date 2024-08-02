@@ -46,7 +46,7 @@ class HomeViewModel @Inject constructor(
             userRepository.logout()
         }
     }
-    private fun getListStory() {
+     fun getListStory() {
         viewModelScope.launch {
             _isLoading.emit(true)
             try {

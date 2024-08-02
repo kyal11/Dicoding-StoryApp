@@ -60,7 +60,12 @@ class MapsFragment : Fragment() {
 
     private fun setMapStyle() {
         try {
-            val success = mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style))
+            val success = mMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    requireContext(),
+                    R.raw.map_style
+                )
+            )
             if (!success) {
                 Log.e("MapsFragment", "Style parsing failed.")
             }
@@ -80,47 +85,61 @@ class MapsFragment : Fragment() {
                     mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
                     true
                 }
+
                 R.id.satellite_type -> {
                     mMap.mapType = GoogleMap.MAP_TYPE_SATELLITE
                     true
                 }
+
                 R.id.terrain_type -> {
                     mMap.mapType = GoogleMap.MAP_TYPE_TERRAIN
                     true
                 }
+
                 R.id.hybrid_type -> {
                     mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
                     true
                 }
+
                 else -> false
             }
         }
     }
+
     private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.isStoryData.collect { storyData ->
                 storyData?.let {
                     it.listStory.forEach { data ->
-                        val lat = data.lat ?: return@forEach
-                        val lon = data.lon ?: return@forEach
-                        val latLng = LatLng(lat, lon)
-                        mMap.addMarker(
-                            MarkerOptions()
-                                .position(latLng)
-                                .title(data.name)
-                                .snippet(data.description)
-                        )
+                        val lat = data.lat
+                        val lon = data.lon
+                        if (lat != null && lon != null) {
+                            val latLng = LatLng(lat, lon)
+                            mMap.addMarker(
+                                MarkerOptions()
+                                    .position(latLng)
+                                    .title(data.name)
+                                    .snippet(data.description)
+                            )
+                            Log.d(
+                                "MapsFragmentMarker",
+                                "Marker added for ${data.name} at $lat, $lon"
+                            )
+                        } else {
+                            Log.e("MapsFragmentMarker", "Invalid lat/lon for ${data.name}")
+                        }
                     }
                 }
             }
-        }
 
-        lifecycleScope.launch {
-            viewModel.errorMessage.collect { errorMessage ->
-                errorMessage?.let {
-                    Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
+        }
+            lifecycleScope.launch {
+                viewModel.errorMessage.collect { errorMessage ->
+                    errorMessage?.let {
+                        Snackbar.make(requireView(), it, Snackbar.LENGTH_SHORT).show()
+                    }
                 }
             }
-        }
+
     }
 }

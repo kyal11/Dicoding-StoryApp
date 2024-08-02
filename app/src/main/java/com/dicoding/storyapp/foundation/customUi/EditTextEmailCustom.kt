@@ -28,21 +28,24 @@ class EditTextEmailCustom @JvmOverloads constructor(
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (s.toString().isNotEmpty()) showClearButton() else hideClearButton()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
                 if (s.toString().isNotEmpty() && !Patterns.EMAIL_ADDRESS.matcher(s.toString()).matches()) {
                     setError(context.getString(R.string.invalid_email), null)
                 } else {
                     error = null
                 }
-                if (s.toString().isNotEmpty()) showClearButton() else hideClearButton()
             }
-
-            override fun afterTextChanged(s: Editable?) {}
         })
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        hint = context.getString(R.string.email)
+        if (hint == null) {
+            hint = context.getString(R.string.email)
+        }
         textAlignment = View.TEXT_ALIGNMENT_VIEW_START
     }
 
@@ -53,7 +56,6 @@ class EditTextEmailCustom @JvmOverloads constructor(
     private fun hideClearButton() {
         setButtonDrawables()
     }
-
 
     private fun setButtonDrawables(
         startOfTheText: Drawable? = null,
@@ -73,38 +75,34 @@ class EditTextEmailCustom @JvmOverloads constructor(
         if (compoundDrawablesRelative[2] != null) {
             val clearButtonStart: Float
             val clearButtonEnd: Float
-            var isClearButtonClicked = false
+            val isClearButtonClicked: Boolean
 
             if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
                 clearButtonEnd = (clearButtonImage.intrinsicWidth + paddingStart).toFloat()
-                if (event.x < clearButtonEnd) isClearButtonClicked = true
+                isClearButtonClicked = event.x < clearButtonEnd
             } else {
                 clearButtonStart = (width - paddingEnd - clearButtonImage.intrinsicWidth).toFloat()
-                if (event.x > clearButtonStart) isClearButtonClicked = true
+                isClearButtonClicked = event.x > clearButtonStart
             }
 
             if (isClearButtonClicked) {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        clearButtonImage = ContextCompat.getDrawable(context, R.drawable.ic_clear) as Drawable
                         showClearButton()
                         return true
                     }
                     MotionEvent.ACTION_UP -> {
-                        clearButtonImage = ContextCompat.getDrawable(context, R.drawable.ic_clear) as Drawable
                         text?.clear()
                         hideClearButton()
                         return true
                     }
                     else -> return false
                 }
-            } else return false
+            }
         }
         return false
     }
-
     override fun performClick(): Boolean {
-        super.performClick()
-        return true
+        return super.performClick()
     }
 }

@@ -8,10 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.dicoding.storyapp.data.datasource.remote.response.ListStoryItem
 import com.dicoding.storyapp.databinding.ItemStoryBinding
-import java.text.SimpleDateFormat
-import java.util.Locale
-import java.util.TimeZone
-
+import com.dicoding.storyapp.foundation.utils.DateUtils
 class StoryAdapter(private val storyClickListener: StoryClickListener) :
     PagingDataAdapter<ListStoryItem, StoryAdapter.ViewHolder>(StoryDiffCallback()) {
 
@@ -26,9 +23,6 @@ class StoryAdapter(private val storyClickListener: StoryClickListener) :
 
     class ViewHolder private constructor(private val binding: ItemStoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).apply {
-            timeZone = TimeZone.getTimeZone("UTC")
-        }
         fun bind(story: ListStoryItem?, storyClickListener: StoryClickListener) {
             if (story != null) {
                 Glide.with(itemView.context)
@@ -36,21 +30,11 @@ class StoryAdapter(private val storyClickListener: StoryClickListener) :
                     .into(binding.ivStory)
                 binding.tvName.text = story.name
                 binding.tvDesc.text = story.description
-                val formattedDate = formatDate(story.createdAt)
+                val formattedDate = DateUtils.formatDate(story.createdAt)
                 binding.tvDate.text = formattedDate
                 itemView.setOnClickListener {
                     storyClickListener.onStoryClick(story)
                 }
-            }
-        }
-        private fun formatDate(dateString: String): String {
-            return try {
-                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-                inputFormat.timeZone = TimeZone.getTimeZone("UTC")
-                val date = inputFormat.parse(dateString)
-                date?.let { dateFormat.format(it) } ?: dateString
-            } catch (e: Exception) {
-                dateString
             }
         }
         companion object {

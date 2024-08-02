@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.dicoding.storyapp.databinding.FragmentDetailStoryBinding
+import com.dicoding.storyapp.foundation.utils.DateUtils
 import com.dicoding.storyapp.foundation.utils.LoadingDialogFragment
 import com.dicoding.storyapp.ui.login.LoginFragment
 import com.google.android.material.snackbar.Snackbar
@@ -60,7 +61,7 @@ class DetailStoryFragment : Fragment() {
                         text = if (it.lat != null && it.lon != null) "${it.lat} | ${it.lon}" else ""
                         visibility = if (it.lat != null && it.lon != null) View.VISIBLE else View.GONE
                     }
-                    binding.tvDate.text = it.createdAt
+                    binding.tvDate.text = it.createdAt?.let { date -> DateUtils.formatDate(date) }
                 }
             }
         }

@@ -72,7 +72,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <com.dicoding.storyapp.foundation.customUi.EditTextEmailCustom
-        android:id="@+id/editTextEmailCustom"
+        android:id="@+id/editTextEmailCustomLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="43dp"
@@ -93,11 +93,11 @@
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextEmailCustom"
+        app:layout_constraintTop_toBottomOf="@+id/editTextEmailCustomLogin"
         app:passwordToggleEnabled="true">
 
         <com.dicoding.storyapp.foundation.customUi.EditTextPasswordCustom
-            android:id="@+id/editTextPasswordCustom"
+            android:id="@+id/editTextPasswordCustomLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="43dp"
@@ -106,13 +106,13 @@
             android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextEmailCustom"
+            app:layout_constraintTop_toBottomOf="@+id/editTextEmailCustomLogin"
             tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/btn_signin"
+        android:id="@+id/btn_signin_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="43dp"
